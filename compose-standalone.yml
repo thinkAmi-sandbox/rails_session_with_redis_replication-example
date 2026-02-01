@@ -1,0 +1,36 @@
+services:
+  redis-master:
+    image: redis:8.4.0-bookworm
+    container_name: redis-master
+    ports:
+      - "17000:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--protected-mode", "no"]
+    restart: unless-stopped
+    networks:
+      - redis-network
+
+  redis-replica:
+    image: redis:8.4.0-bookworm
+    container_name: redis-replica
+    depends_on:
+      - redis-master
+    ports:
+      - "17001:6379"
+    command:
+      - "redis-server"
+      - "--save"
+      - ""
+      - "--appendonly"
+      - "no"
+      - "--protected-mode"
+      - "no"
+      - "--replicaof"
+      - "redis-master"
+      - "6379"
+    restart: unless-stopped
+    networks:
+      - redis-network
+
+networks:
+  redis-network:
+    name: redis-network
