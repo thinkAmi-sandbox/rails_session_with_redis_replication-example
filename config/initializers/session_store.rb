@@ -1,11 +1,6 @@
-Rails.application.config.session_store :redis_store,
-                                       servers: [
-                                         {
-                                           host: "redis-master",
-                                           port: 6379,
-                                           db: 0,
-                                           namespace: "session"
-                                         }
-                                       ],
+Rails.application.config.session_store :cache_store,
+                                       cache: ActiveSupport::Cache::RedisCacheStore.new(
+                                         url: "redis://redis-master:6379/0",
+                                       ),
                                        expire_after: 90.minutes,
                                        key: "_redis_session"

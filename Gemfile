@@ -17,4 +17,4 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 end
 
-gem "redis-actionpack", "~> 5.5"
+gem "redis", "~> 5.4"
