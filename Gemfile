@@ -18,3 +18,5 @@ group :development, :test do
 end
 
 gem "redis", "~> 5.4"
+
+gem "redis-clustering", "~> 5.4"
