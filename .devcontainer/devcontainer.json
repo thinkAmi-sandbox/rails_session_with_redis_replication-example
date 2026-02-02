@@ -1,5 +1,5 @@
 {
-  "name": "rails_local2devcontainer-example",
+  "name": "rails_session_with_redis_replication_example",
   // Rails公式のDevContainerを利用
   "image": "ghcr.io/rails/devcontainer/images/ruby:3.4.8",
   "mounts": [
