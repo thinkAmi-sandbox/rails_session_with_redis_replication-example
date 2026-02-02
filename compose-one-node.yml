@@ -1,0 +1,70 @@
+services:
+  redis-cluster-master:
+    image: redis:8.4.0-bookworm
+    container_name: redis-cluster-master
+    ports:
+      - "17010:6379"
+    command:
+      - "redis-server"
+      - "--save"
+      - ""
+      - "--appendonly"
+      - "no"
+      - "--protected-mode"
+      - "no"
+      - "--cluster-enabled"
+      - "yes"
+      - "--cluster-config-file"
+      - "nodes.conf"
+      - "--cluster-node-timeout"
+      - "5000"
+    restart: unless-stopped
+    networks:
+      - redis-network
+
+  redis-cluster-replica:
+    image: redis:8.4.0-bookworm
+    container_name: redis-cluster-replica
+    ports:
+      - "17011:6379"
+    command:
+      - "redis-server"
+      - "--save"
+      - ""
+      - "--appendonly"
+      - "no"
+      - "--protected-mode"
+      - "no"
+      - "--cluster-enabled"
+      - "yes"
+      - "--cluster-config-file"
+      - "nodes.conf"
+      - "--cluster-node-timeout"
+      - "5000"
+    restart: unless-stopped
+    networks:
+      - redis-network
+
+  redis-cluster-init:
+    image: redis:8.4.0-bookworm
+    container_name: redis-cluster-init
+    depends_on:
+      - redis-cluster-master
+      - redis-cluster-replica
+    command:
+      - "sh"
+      - "-c"
+      - |
+        until redis-cli -h redis-cluster-master ping; do sleep 1; done
+        until redis-cli -h redis-cluster-replica ping; do sleep 1; done
+        redis-cli --cluster create \
+          redis-cluster-master:6379 \
+          redis-cluster-replica:6379 \
+          --cluster-replicas 1 --cluster-yes
+    restart: "no"
+    networks:
+      - redis-network
+
+networks:
+  redis-network:
+    name: redis-network
